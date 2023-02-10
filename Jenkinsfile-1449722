@@ -1,0 +1,22 @@
+pipeline {
+  agent any
+  stages {
+    stage ('Deploy (cr5j7m)') {
+      steps {
+        sh script: 'helm package chart', label: 'yrl20w'
+        withCredentials([usernamePassword(credentialsId: '', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
+
+        script {
+            sh script: '''
+curl -u$USER:$PASS -T github-branches-test-frontend-chart-0.1.0.tgz 'https://artifactory.dagility.com/artifactory/helm-local/github-branches-test-frontend-chart-0.1.0.tgz' 
+''', label: 'fdefdc'
+        } // end step group script
+script { sh script: 'sleep 0.005', label: 'icoxs7'}
+} // end step group
+        sh script: 'helm repo add github-branches-test-frontend https://artifactory.dagility.com/artifactory/helm ', label: 'v8rljh'
+        sh script: 'helm repo update', label: 'xkb2da'
+        sh script: 'helm upgrade github-branches-test-frontend-deployment github-branches-test-frontend/github-branches-test-frontend-chart --install --values chart-values.yaml --namespace habitat-development --set ingress.hosts[0].host=github-branches-test-frontend-habitat-development.dagility.com', label: 'j0myop'
+      } //end steps
+    } // end stage Deploy
+  }
+}
