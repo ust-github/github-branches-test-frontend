@@ -1,0 +1,34 @@
+pipeline {
+  agent any
+  stages {
+    stage ('Installing (wxnefw)') {
+      steps {
+        sh script: 'npm install', label: 'r7qc4l'
+      } //end steps
+    } // end stage Installing
+    stage ('Testing (g20iik)') {
+      steps {
+        sh script: 'ng test --browsers ChromeHeadless --code-coverage true --preserve-symlinks false --source-map true --watch false', label: 'ii8non'
+      } //end steps
+    } // end stage Testing
+    stage ('Building (1fq5gs)') {
+      steps {
+        sh script: 'ng build  --aot false --build-optimizer false --common-chunk true --cross-origin none --delete-output-path true --extract-css false --extract-licenses false --fork-type-checker true --named-chunks true --output-hashing none --preserve-symlinks false --prod true --service-worker false --source-map true --stats-json false --subresource-integrity false --vendor-chunk true', label: 'i0f2h3'
+        script {
+		docker.withTool('docker'){
+
+        
+            sh script: '''
+docker build -t artifactory.dagility.com/docker/github-branches-test-frontend:latest .
+''', label: 'dcbbcd'
+            sh script: '''
+docker push artifactory.dagility.com/docker/github-branches-test-frontend:latest
+''', label: 'fdcfbb'
+        		}
+	}
+script { sh script: 'sleep 0.005', label: '1t2w2u'}
+
+      } //end steps
+    } // end stage Building
+  }
+}
