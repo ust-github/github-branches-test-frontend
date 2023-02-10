@@ -1,0 +1,51 @@
+pipeline {
+  agent any
+  stages {
+    stage ('Installing (wxnefw)') {
+      steps {
+        sh script: 'npm install', label: 'r7qc4l'
+      } //end steps
+    } // end stage Installing
+    stage ('Testing (g20iik)') {
+      steps {
+        sh script: 'ng test --browsers ChromeHeadless --code-coverage true --preserve-symlinks false --source-map true --watch false', label: 'ii8non'
+      } //end steps
+    } // end stage Testing
+    stage ('Building (1fq5gs)') {
+      steps {
+        sh script: 'ng build  --aot false --build-optimizer false --common-chunk true --cross-origin none --delete-output-path true --extract-css false --extract-licenses false --fork-type-checker true --named-chunks true --output-hashing none --preserve-symlinks false --prod true --service-worker false --source-map true --stats-json false --subresource-integrity false --vendor-chunk true', label: 'i0f2h3'
+      } //end steps
+    } // end stage Building
+    stage ('Deploy (cr5j7m)') {
+      steps {
+        script {
+		docker.withTool('docker'){
+
+        
+            sh script: '''
+docker build -t artifactory.dagility.com/docker/github-branches-test-frontend:latest .
+''', label: 'acccbc'
+            sh script: '''
+docker push artifactory.dagility.com/docker/github-branches-test-frontend:latest
+''', label: 'ccafda'
+        		}
+	}
+script { sh script: 'sleep 0.005', label: '1t2w2u'}
+
+        sh script: 'helm package chart', label: 'yrl20w'
+        withCredentials([usernamePassword(credentialsId: '', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
+
+        script {
+            sh script: '''
+curl -u$USER:$PASS -T github-branches-test-frontend-chart-0.1.0.tgz 'https://artifactory.dagility.com/artifactory/helm-local/github-branches-test-frontend-chart-0.1.0.tgz' 
+''', label: 'cecffa'
+        } // end step group script
+script { sh script: 'sleep 0.005', label: 'icoxs7'}
+} // end step group
+        sh script: 'helm repo add github-branches-test-frontend https://artifactory.dagility.com/artifactory/helm ', label: 'v8rljh'
+        sh script: 'helm repo update', label: 'xkb2da'
+        sh script: 'helm upgrade github-branches-test-frontend-deployment github-branches-test-frontend/github-branches-test-frontend-chart --install --values chart-values.yaml --namespace habitat-development --set ingress.hosts[0].host=github-branches-test-frontend-habitat-development.dagility.com', label: 'j0myop'
+      } //end steps
+    } // end stage Deploy
+  }
+}
