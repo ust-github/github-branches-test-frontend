@@ -1,0 +1,14 @@
+image:
+  repository: artifactory.dagility.com/docker/github-branches-test-frontend
+  tag: latest
+  pullPolicy: Always
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: nginx-internal
+  hosts:
+  - host: github-branches-test-frontend-habitat-development.dagility.com
+    paths:
+    - /
+serviceAccount:
+  create: false
